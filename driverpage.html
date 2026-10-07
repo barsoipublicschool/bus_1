@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body { margin: 0; padding: 10px; background: #f4f7f6; font-family: sans-serif; }
+        .map-card { background: white; border-radius: 12px; padding: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        #map { width: 100%; height: 250px; border-radius: 8px; }
+        .info-panel { display: flex; justify-content: space-around; margin-top: 10px; text-align: center; font-size: 12px; }
+        .info-box strong { display: block; color: #666; font-size: 10px; }
+    </style>
+</head>
+<body>
+    <div class="map-card">
+        <div id="map"></div>
+        <div class="info-panel">
+            <div class="info-box"><strong>LATITUDE</strong><span id="latVal">0.00000</span></div>
+            <div class="info-box"><strong>LONGITUDE</strong><span id="lngVal">0.00000</span></div>
+            <div class="info-box"><strong>LAST UPDATED</strong><span id="timeVal">--:--:--</span></div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbysJpfOZTAmZ0NsvKn0MpRMnnRckXJ4to_ZAQDaxTsgHzxjW3Fqi0-Dr5gg0sfRolnG/exec";
+        let map, marker;
+
+        function initMap() {
+            map = L.map('map').setView([25.64563, 87.91774], 15);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+            const busIcon = L.icon({
+                iconUrl: 'https://cdn-icons-png.flaticon.com/512/3448/3448339.png',
+                iconSize: [35, 35],
+                iconAnchor: [17, 17]
+            });
+
+            marker = L.marker([25.64563, 87.91774], { icon: busIcon }).addTo(map)
+                .bindPopup("<b>BUS-01</b><br>Speed: 0 km/h");
+
+            fetchLocation();
+            setInterval(fetchLocation, 5000);
+        }
+
+        function fetchLocation() {
+            fetch(SCRIPT_URL + "?action=getLatest")
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.status !== "STOPPED" && data.lat) {
+                        const lat = parseFloat(data.lat);
+                        const lng = parseFloat(data.lng);
+                        const speed = data.speed || "0 km/h";
+
+                        document.getElementById('latVal').innerText = lat.toFixed(5);
+                        document.getElementById('lngVal').innerText = lng.toFixed(5);
+                        document.getElementById('timeVal').innerText = new Date().toTimeString().split(' ')[0];
+
+                        const newPos = new L.LatLng(lat, lng);
+                        marker.setLatLng(newPos);
+                        marker.getPopup().setContent(`<b>BUS-01</b><br>Speed: ${speed}`);
+                        map.panTo(newPos);
+                    }
+                }).catch(err => console.log(err));
+        }
+
+        window.onload = initMap;
+    </script>
+</body>
+</html>
