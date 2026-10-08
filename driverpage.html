@@ -4,11 +4,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        body { margin: 0; padding: 10px; background: #f4f7f6; font-family: sans-serif; }
-        .map-card { background: white; border-radius: 12px; padding: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        #map { width: 100%; height: 250px; border-radius: 8px; }
-        .info-panel { display: flex; justify-content: space-around; margin-top: 10px; text-align: center; font-size: 12px; }
-        .info-box strong { display: block; color: #666; font-size: 10px; }
+        body { 
+            margin: 0; 
+            padding: 10px; 
+            background: #f4f7f6; 
+            font-family: sans-serif; 
+            box-sizing: border-box;
+        }
+        .map-card { 
+            background: white; 
+            border-radius: 12px; 
+            padding: 10px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+        }
+        /* Map height badha kar 420px ki gayi hai */
+        #map { 
+            width: 100%; 
+            height: 420px; 
+            border-radius: 8px; 
+        }
+        .info-panel { 
+            display: flex; 
+            justify-content: space-around; 
+            margin-top: 12px; 
+            text-align: center; 
+            font-size: 12px; 
+        }
+        .info-box strong { 
+            display: block; 
+            color: #666; 
+            font-size: 10px; 
+            margin-bottom: 2px;
+        }
     </style>
 </head>
 <body>
@@ -27,8 +54,13 @@
         let map, marker;
 
         function initMap() {
-            map = L.map('map').setView([25.64563, 87.91774], 15);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+            map = L.map('map').setView([25.64563, 87.91774], 16);
+
+            // Satellite Layer Integration (Google Satellite)
+            L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                maxZoom: 20,
+                attribution: '&copy; Google Maps'
+            }).addTo(map);
 
             const busIcon = L.icon({
                 iconUrl: 'https://cdn-icons-png.flaticon.com/512/3448/3448339.png',
